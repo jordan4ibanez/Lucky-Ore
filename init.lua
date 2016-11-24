@@ -35,18 +35,6 @@ minetest.register_node("lucky_ore:ore", {
 		},
 	},
 	paramtype = "light",
-	paramtype2 = "facedir",
-	sunlight_propagates = true,
-	use_texture_alpha = true,
-	walkable = false,
-	diggable = false,
-	pointable = false,
-	buildable_to = false,
-	is_ground_content = false,
-	drop = "",
 	light_source = 5,
-	post_effect_color = {a = 180, r = 128, g = 0, b = 128},
-	alpha = 192,
-
-	--groups = {not_in_creative_inventory = 1}
+	groups = {cracky = 3},
 })
