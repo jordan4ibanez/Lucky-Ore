@@ -64,6 +64,7 @@ minetest.register_entity("lucky_ore:item",{
 	expire = 0,
 	counting = true,
 	on_activate = function(self, staticdata)
+		self.object:set_armor_groups({immortal = 1})
 		self.texture = ItemStack("default:dirt_with_grass"):get_name()
 		self.nodename = "default:dirt_with_grass"
 		self.object:set_properties({textures={self.texture}})
