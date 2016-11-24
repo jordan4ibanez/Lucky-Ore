@@ -22,7 +22,7 @@ minetest.register_node("lucky_ore:ore", {
 				type = "vertical_frames",
 				aspect_w = 16,
 				aspect_h = 16,
-				length = 0.5,
+				length = 0.4,
 			},
 		},
 		{
@@ -31,7 +31,7 @@ minetest.register_node("lucky_ore:ore", {
 				type = "vertical_frames",
 				aspect_w = 16,
 				aspect_h = 16,
-				length = 0.5,
+				length = 0.4,
 			},
 		},
 	},
@@ -51,6 +51,20 @@ for item,def in pairs(minetest.registered_items) do
 	lucky_table[count] = item
 end
 
+--the explosion for loses
+local def = {
+	name = "lucky_ore:explosion",
+	description = "Ore Explosion (you hacker you!)",
+	radius = 3,
+	tiles = {
+		side = "default_dirt.png",
+		top = "default_dirt.png",
+		bottom = "default_dirt.png",
+		burning = "default_dirt.png"
+	},
+}
+tnt.register_tnt(def)
+
 --the entity which shows all the items
 minetest.register_entity("lucky_ore:item",{
 	hp_max = 1,
@@ -59,7 +73,10 @@ minetest.register_entity("lucky_ore:item",{
 	collisionbox = {0,0,0,0,0,0},
 	physical=false,
 	textures={"air"},
-	count = 1,
+	count = 0, --start at zero since counter adds before showing item
+	timer = 0,
+	expire = 0,
+	counting = true,
 	on_activate = function(self, staticdata)
 		self.texture = ItemStack("default:dirt_with_grass"):get_name()
 		self.nodename = "default:dirt_with_grass"
@@ -70,18 +87,51 @@ minetest.register_entity("lucky_ore:item",{
 				object = self.object,
 				loop = true,
 			})
+		self.object:set_properties({automatic_rotate=1})
+		self.expire = math.random(5,10)
 	end,
 	on_step = function(self,dtime)
-		
-		self.texture = ItemStack(lucky_table[self.count]):get_name()
-		self.nodename = lucky_table[self.count]
-		self.object:set_properties({textures={self.texture}})
-		
-		self.count = self.count + 1
-		if self.count > count then
-			self.count = 1
+		self.timer = self.timer + dtime
+		--if it's past expiration then stop and do some particles and showcase
+		if self.timer >= self.expire then
+			--turn off the counting sound
+			if self.counting == true then
+				minetest.sound_stop(self.sound)
+				self.sound = nil
+				self.counting = false
+			end
+			--turn on the win sound
+			if self.counting == false and self.sound == nil then
+				self.sound = minetest.sound_play("lucky_ore_win", {
+						max_hear_distance = 30,
+						gain = 10.0,
+						object = self.object,
+					})
+			end
+			
+			if self.timer >= self.expire + 2 then
+				minetest.sound_stop(self.sound)
+				
+				--the fake win
+				if math.random() > 0.5 then
+					tnt.boom(self.object:getpos(), def)
+					self.object:remove()
+				else
+					minetest.add_item(self.object:getpos(), lucky_table[self.count])
+					self.object:remove()
+				end
+			end
+		else --show all the items and cycle
+			self.count = self.count + 1
+			if self.count > count then
+				self.count = 1
+			end
+			self.texture = ItemStack(lucky_table[self.count]):get_name()
+			self.nodename = lucky_table[self.count]
+			self.object:set_properties({textures={self.texture}})
 		end
-		print(self.count)
+		
+
 	end,
 })
 
