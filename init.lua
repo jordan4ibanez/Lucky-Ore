@@ -124,7 +124,7 @@ minetest.register_entity("lucky_ore:item",{
 --ore generation
 minetest.register_ore({
 		ore_type       = "scatter",
-		ore            = "default:stone_with_coal",
+		ore            = "lucky_ore:ore",
 		wherein        = "default:stone",
 		clust_scarcity = 8 * 8 * 8,
 		clust_num_ores = 9,
