@@ -76,7 +76,7 @@ minetest.register_entity("lucky_ore:item",{
 				loop = true,
 			})
 		self.object:set_properties({automatic_rotate=1})
-		self.expire = math.random(5,10)
+		self.expire = math.random(3,15)+math.random()
 	end,
 	on_step = function(self,dtime)
 		self.timer = self.timer + dtime
