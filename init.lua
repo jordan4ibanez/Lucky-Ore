@@ -64,6 +64,7 @@ minetest.register_entity("lucky_ore:item",{
 	expire = 0,
 	counting = true,
 	on_activate = function(self, staticdata)
+		self.origin = self.object:getpos()
 		self.object:set_armor_groups({immortal = 1})
 		self.texture = ItemStack("default:dirt_with_grass"):get_name()
 		self.nodename = "default:dirt_with_grass"
@@ -79,6 +80,8 @@ minetest.register_entity("lucky_ore:item",{
 	end,
 	on_step = function(self,dtime)
 		self.timer = self.timer + dtime
+		self.object:setvelocity({x=0,y=0,z=0})
+		self.object:setpos(self.origin)
 		--if it's past expiration then stop and do some particles and showcase
 		if self.timer >= self.expire then
 			--turn off the counting sound
