@@ -103,11 +103,29 @@ minetest.register_entity("lucky_ore:item",{
 				minetest.sound_stop(self.sound)
 				
 				--the fake win
-				if math.random() > 0.5 then
+				if math.random() > 0.8 then
 					tnt.boom(self.object:getpos(), def)
 					self.object:remove()
-				else
+				else --real win
+					local pos = self.object:getpos()
 					minetest.add_item(self.object:getpos(), lucky_table[self.count])
+					minetest.add_particlespawner({
+						amount = 80,
+						time = 0.1,
+						minpos = {x=pos.x, y=pos.y, z=pos.z},
+						maxpos = {x=pos.x, y=pos.y, z=pos.z},
+						minvel = {x=-5, y=-5, z=-5},
+						maxvel = {x=5, y=5, z=5},
+						minacc = {x=0, y=-10, z=0},
+						maxacc = {x=0, y=-10, z=0},
+						minexptime = 1,
+						maxexptime = 1,
+						minsize = 1,
+						maxsize = 1,
+						collisiondetection = true,
+						vertical = false,
+						texture = "lucky_win_particle.png",
+					})
 					self.object:remove()
 				end
 			end
